@@ -1,0 +1,21 @@
+{
+  "project": "CharterGate",
+  "repository": "https://github.com/demirx06/chartergate-genlayer",
+  "network": "studionet",
+  "observed_on": "2026-10-24",
+  "source_commit": "e914a8f9b785de580f1a529a3da27c909eb6cd9d",
+  "contract_source_path": "contracts/charter_gate.py",
+  "contract_source_sha256": "64608fb2f9e2fda66be4b38ce129856518d26a51213a435b64585afcf0fb4bf6",
+  "contract_address": "0xa87a9D861909410160Eee4540dA1Af3cE8a5B425",
+  "explorer_url": "https://explorer-studio.genlayer.com/address/0xa87a9D861909410160Eee4540dA1Af3cE8a5B425",
+  "github_actions_run": "https://github.com/demirx06/chartergate-genlayer/actions/runs/40023509447",
+  "integration_test": "tests/integration/test_studionet.py",
+  "test_result": "1 passed in 58.33s",
+  "observed_verdict": "COMPLIANT",
+  "transactions": {
+    "CHARTER_INITIALIZED_TX": "0x2a7bee4de15182b3557843b4966a73557b7a072ce5ad894a9e4997d1b4578cb1",
+    "PROPOSAL_SUBMITTED_TX": "0xbf34b181d8a061eaa47d239f1400505697dbdfb19dab9f678bc31e197492f87b",
+    "CONSENSUS_REVIEW_TX": "0x3320216ad4e229145b25514e08d1d2cb0bebb433dbd6acc7687751ee1b527b95"
+  },
+  "evidence_scope": "This records the observed Studionet integration run; it does not claim an external security audit or Portal acceptance."
+}
