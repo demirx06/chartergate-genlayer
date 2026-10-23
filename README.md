@@ -1,32 +1,32 @@
 # CharterGate — GenLayer DAO Charter Compliance & Challenge Registry
 
-CharterGate is an experimental, reusable GenLayer Intelligent Contract for accountable DAO governance decisions. A curator freezes a **natural-language DAO charter** once; users submit proposals and self-attested evidence; validators independently decide whether the supplied evidence supports charter compliance, conflicts with it, or remains insufficient. A rejected user gets exactly **one evidence revision**, while both verdict receipts remain immutable.
+CharterGate is a reusable GenLayer Intelligent Contract for evidence-aware DAO governance review. An authorized curator freezes a human-readable charter once; participants submit proposals and supporting text; validator consensus classifies each proposal as `COMPLIANT`, `NON_COMPLIANT`, or `INSUFFICIENT_EVIDENCE`. Each review produces an immutable decision receipt, and the original submitter has one opportunity to challenge a non-compliant or insufficient result with revised evidence.
 
-## What makes it useful
+## Why GenLayer?
 
-- Transparent charter freeze and SHA-256 commitment: proposal reviews reference the *same* rulebook.
-- Distinct **submitter** and **curator** roles; every case has an immutable submitter identity.
-- GenLayer nondeterministic model classification with validators independently recomputing a *decisive* verdict, not tolerating class disagreements.
-- `COMPLIANT`, `NON_COMPLIANT`, and fail-closed `INSUFFICIENT_EVIDENCE` instead of an unsafe binary answer.
-- Fixed 80/100 confidence threshold; malformed AI responses cannot become approval.
-- First result is an immutable receipt. One challenger-supplied changed evidence digest may trigger round 2; old result remains readable.
-- Bounded storage (100 cases); control/invisible text filtering; no native token transfer or governance vote execution.
+Deciding whether a narrative proposal complies with governance policy requires semantic judgment that ordinary deterministic contracts cannot perform alone. CharterGate confines model evaluation to GenLayer nondeterministic execution with validators independently checking the decisive outcome; ownership rules, evidence hashes, state transitions, and challenge limits remain deterministic.
 
-The semantic task — applying language policy to narrative proposals — cannot be performed by ordinary deterministic Solidity alone. Authorization, state transitions, hash binding, challenge limits and outputs remain deterministic; GenLayer consensus is used only where judgment is necessary.
+## Main features
 
-## Contract methods
+- One-time charter freeze with SHA-256 commitment.
+- Separate curator and proposal-submitter permissions.
+- SHA-256 evidence commitments and immutable review receipts.
+- Validator-backed `COMPLIANT` / `NON_COMPLIANT` / `INSUFFICIENT_EVIDENCE` outcomes.
+- Fail-closed malformed or low-confidence model responses.
+- At most one revised-evidence challenge after an adverse or inconclusive decision.
+- Bounded input lengths, storage limits, and no native token transfers.
 
-1. `initialize_charter(charter)` — deploying curator freezes charter exactly once.
-2. `submit_proposal(title, proposal, evidence)` — new pending case ID; any participant.
-3. `assess(case_id)` — curator requests validator consensus and records immutable round receipt.
-4. `challenge(case_id, corrected_evidence)` — original submitter; one revision after a non-approved result.
-5. `get_case`, `get_receipt`, `get_charter_hash`, `total_cases` — read-only audit trail.
+## Contract interface
 
-**Example:** Charter requires transparent budget, vote period, milestones, accountable team, risk controls and appeal process. A proposal is reviewed; if its evidence omits milestones it should produce `INSUFFICIENT_EVIDENCE`. A corrected submission may earn `COMPLIANT` on round 2. Actual LLM decisions are not guaranteed or asserted in advance.
+- `initialize_charter(charter)` — freeze the policy once.
+- `submit_proposal(title, proposal, evidence)` — register a proposal.
+- `assess(case_id)` — run validator-backed review and record a receipt.
+- `challenge(case_id, corrected_evidence)` — one permitted evidence revision.
+- `get_case`, `get_receipt`, `get_charter_hash`, `total_cases` — audit-oriented read-only calls.
 
-## Quick start / validation
+Source: [`contracts/charter_gate.py`](contracts/charter_gate.py).
 
-Python 3.12 is recommended for the linked GenLayer toolchain.
+## Reproducible tests
 
 ```bash
 python -m pip install -r requirements.txt
@@ -35,27 +35,23 @@ python -m pytest tests/direct -q
 genvm-lint check contracts/charter_gate.py
 ```
 
-Offline tests use a *fake* SDK to check local logic; **they do not test GenLayer**. The `tests/direct` suite uses `direct_vm`, `direct_deploy`, mock LLM and validator-reexecution fixtures from the real GenLayer testing SDK, and must pass in GitHub Actions before submission. See `.github/workflows/ci.yml`.
+GitHub verification workflow: [CI Actions](https://github.com/demirx06/chartergate-genlayer/actions/workflows/ci.yml). It covers Python compilation, offline tests, GenLayer Direct Mode tests, GenVM lint, and source hashing. Offline tests are not chain evidence.
 
-## Technical evidence status (23 Oct 2026)
+## Public GenLayer Studionet verification — 24 October 2026
 
-- Python syntax: PASS.
-- Offline mock tests: **16 PASS** on preparation machine.
-- Direct Mode/GenVM lint/CI: **NOT EXECUTED** on preparation machine (SDK not installed); require GitHub Actions confirmation.
-- Public Studionet/Bradbury deployment and receipt: **NOT DONE**.
-- Static `site/` folder: UI simulation ONLY, not deployed GenLayer contract.
+A manually authorized test run deployed CharterGate and exercised on-chain initialization, proposal submission, GenLayer consensus review, and state readback.
 
-Do not fabricate passing CI, public validator votes, tx hashes, token rewards or Portal acceptance. Before Portal submission, owner must review the project, provide a real GitHub link, ensure required tests pass, and accurately disclose authorship. A specific CP amount cannot be guaranteed.
+- [Successful GitHub Actions network run](https://github.com/demirx06/chartergate-genlayer/actions/runs/40023509447): `1 passed in 58.33s`.
+- [Deployed contract on GenLayer Studionet](https://explorer-studio.genlayer.com/address/0xa87a9D861909410160Eee4540dA1Af3cE8a5B425): `0xa87a9D861909410160Eee4540dA1Af3cE8a5B425`.
+- Observed consensus verdict: `COMPLIANT`.
+- Full source hash, commit, transaction hashes, test summary: [`docs/PROOF_MANIFEST.json`](docs/PROOF_MANIFEST.json).
+- Updated evidence ledger: [`docs/PROOF_STATUS.md`](docs/PROOF_STATUS.md).
 
-## Folder map
+This demonstrates the tested Studionet scenario, not an independent security audit or guaranteed behavior for every proposal. The example site in `site/` is a static demonstration, not a blockchain-connected production frontend. No GEN token transfer or financial escrow is claimed.
 
-- `contracts/charter_gate.py`: real GenLayer contract candidate.
-- `tests/offline`: pure Python sanity checks, NOT chain proof.
-- `tests/direct`: actual GenLayer Direct Mode regressions (to be run via CI).
-- `docs/THREAT_MODEL.md`: security scope and open limitations.
-- `docs/PROOF_STATUS.md`: what has and has not been proven.
-- `docs/REVIEWER_GUIDE.md`: reproducibility walkthrough.
-- `PORTAL_DRAFT.md`: text for review *after* evidence exists.
-- `site/`: clearly labeled browser-only demonstration.
+## Documentation
 
-No GitHub account connected and nothing was submitted to GenLayer Portal during preparation.
+- [`docs/REVIEWER_GUIDE.md`](docs/REVIEWER_GUIDE.md) — reviewer instructions.
+- [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) — risks and limitations.
+- [`docs/PROOF_STATUS.md`](docs/PROOF_STATUS.md) — test and deployment status.
+- [`PORTAL_DRAFT.md`](PORTAL_DRAFT.md) — draft submission text for human review.
