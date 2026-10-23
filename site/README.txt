@@ -1,0 +1,1 @@
+CharterGate is a static, offline educational simulator. Its source display is synced to contracts/charter_gate.py. It does not call GenLayer, prove deployment, provide genuine monitoring, or connect wallets.
