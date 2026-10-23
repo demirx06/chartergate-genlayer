@@ -1,0 +1,26 @@
+name: CharterGate Studionet network proof (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type RUN_STUDIONET_TEST to authorize real Studionet test transactions'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  studionet-proof:
+    if: ${{ inputs.confirmation == 'RUN_STUDIONET_TEST' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned-compatible official test tooling
+        run: python -m pip install -r requirements.txt
+      - name: Record exact source digest
+        run: sha256sum contracts/charter_gate.py
+      - name: Actual Studionet deploy, writes, consensus review and readback
+        run: gltest tests/integration/test_studionet.py -v -s --network studionet
